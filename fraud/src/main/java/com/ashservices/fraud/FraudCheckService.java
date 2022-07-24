@@ -3,6 +3,8 @@ package com.ashservices.fraud;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @Service
 public class FraudCheckService {
@@ -13,6 +15,7 @@ public class FraudCheckService {
         fraudCheckHistoryRepository.save( FraudCheckHistory.builder()
                         .customerId(customerId)
                         .isFraudster(false)
+                        .createdAt(LocalDateTime.now())
                         .build());
         return false;
     }
