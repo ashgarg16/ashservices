@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -38,12 +39,38 @@ public class CustomerService{
         
     }
 
-    public String queryCustomer(QueryCustomer queryCustomer) {
+    public Optional<Customer> queryCustomerById(Integer customerId) {
+       Optional<Customer> customer = customerRepository.findById(customerId);
 
-        List<Customer> customers =customerRepository.findAll();
+       return customer;
 
-        System.out.println(customers);
-        return customerRepository.findAll().toString();
+    }
 
+    public List<Customer> queryAllCustomers() {
+        return customerRepository.findAll();
+    }
+
+    public Optional<Customer> queryCustomerByFirstName(String firstName) {
+        return customerRepository.findAll().stream().filter((Customer c) -> c.getFirstName().equals(firstName)).findAny();
+    }
+
+    public Customer replaceCustomer(Customer customer, Integer id) {
+
+        customerRepository.findById(id)
+                .map( c -> {
+                    c.setFirstName(customer.getFirstName());
+                    c.setLastName(customer.getLastName());
+                    c.setEmail(customer.getEmail());
+                    return customerRepository.save(c);
+                })
+                .orElseGet(() -> {
+                    customer.setId(id);
+                    return customerRepository.save(customer);
+                } );
+        return customer;
+    }
+
+    public void deleteCustomer(Integer id) {
+        customerRepository.deleteById(id);
     }
 }
